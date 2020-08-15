@@ -42,18 +42,4 @@ public class ParsepShem {
         this.dataPost = dataPost;
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        ParsepShem that = (ParsepShem) o;
-//        return Objects.equals(link, that.link) &&
-//                Objects.equals(description, that.description) &&
-//                Objects.equals(dataPost, that.dataPost);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(link, description, dataPost);
-//    }
 }
