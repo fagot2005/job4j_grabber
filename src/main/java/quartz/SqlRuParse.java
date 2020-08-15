@@ -15,20 +15,26 @@ public class SqlRuParse {
     public static void main(String[] args) throws Exception {
         SqlRuParse sqlRuParse = new SqlRuParse();
         List<ParsepShem> parsepShemList = new ArrayList<>();
-        Document doc = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
-        Elements row = doc.select(".postslisttopic");
-        for (Element td : row) {
-            Element href = td.child(0);
-            String link = href.attr("href");
-            String description = href.text();
-            Node node = td.parentNode().childNode(11);
-            String[] dataPostTemp = node.toString().split(">");
-            String[] dataPost = dataPostTemp[1].split("<");
-
-            ParsepShem parsepShem = new ParsepShem(link, description, sqlRuParse.transform(dataPost[0]));
-            parsepShemList.add(parsepShem);
+        Document doc;
+        for (int i = 1; i <= 5; i++) {
+            if (i == 1) {
+                doc  = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
+            } else {
+                doc = Jsoup.connect("https://www.sql.ru/forum/job-offers" + "/" + i).get();
+            }
+            Elements row = doc.select(".postslisttopic");
+            for (Element td : row) {
+                Element href = td.child(0);
+                String link = href.attr("href");
+                String description = href.text();
+                Node node = td.parentNode().childNode(11);
+                String[] dataPostTemp = node.toString().split(">");
+                String[] dataPost = dataPostTemp[1].split("<");
+                ParsepShem parsepShem = new ParsepShem(link, description, sqlRuParse.transform(dataPost[0]));
+                parsepShemList.add(parsepShem);
+                System.out.println(link + System.lineSeparator() + description + System.lineSeparator() + parsepShemList.get(parsepShemList.size()-1).getDataPost());
+            }
         }
-        System.out.println(parsepShemList.get(4));
     }
 
     public LocalDate transform(String dataOfTransform) throws ParseException {
