@@ -6,15 +6,16 @@ import java.util.Objects;
 public class ParsepShem {
     private String link;
     private String description;
+    private String body;
     private LocalDate dataPost;
 
     public ParsepShem() {
-
     }
 
-    public ParsepShem(String link, String description, LocalDate dataPost) {
+    public ParsepShem(String link, String description,String body, LocalDate dataPost) {
         this.link = link;
         this.description = description;
+        this.body = body;
         this.dataPost = dataPost;
     }
 
@@ -42,4 +43,11 @@ public class ParsepShem {
         this.dataPost = dataPost;
     }
 
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
 }

@@ -28,12 +28,11 @@ public class SqlRuParse {
                 Node node = td.parentNode().childNode(11);
                 String[] dataPostTemp = node.toString().split(">");
                 String[] dataPost = dataPostTemp[1].split("<");
-                ParsepShem parsepShem = new ParsepShem(link, description, sqlRuParse.transformData(dataPost[0]));
+                ParsepShem parsepShem = new ParsepShem(link, description, sqlRuParse.parsPost(link), sqlRuParse.transformData(dataPost[0]));
                 parsepShemList.add(parsepShem);
-                System.out.println(link + System.lineSeparator() + description + System.lineSeparator() + parsepShemList.get(parsepShemList.size()-1).getDataPost());
-                sqlRuParse.parsPost(parsepShem);
             }
         }
+        System.out.println("Parsing successful");
     }
 
     public LocalDate transformData(String dataOfTransform) throws ParseException {
@@ -82,9 +81,10 @@ public class SqlRuParse {
         return localDate;
     }
 
-    public void parsPost (ParsepShem post) throws IOException {
-        //System.out.println(post);
-        Document doc = Jsoup.connect(post.getLink()).get();
-        Elements row = doc.select(".msgTable");
+    public String parsPost (String link) throws IOException {
+        int index = 1;
+        Document doc = Jsoup.connect(link).get();
+        Element element = doc.select(".msgBody").get(index);
+        return element.text();
     }
 }
