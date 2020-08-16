@@ -3,7 +3,6 @@ package quartz;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -15,6 +14,8 @@ import java.util.List;
 
 public class SqlRuParse {
     public static void main(String[] args) throws Exception {
+        int childNodeFirstDataPost = 11;
+        int childNodeSecondDataPost = 0;
         SqlRuParse sqlRuParse = new SqlRuParse();
         List<ParsepShem> parsepShemList = new ArrayList<>();
         Document doc;
@@ -25,10 +26,8 @@ public class SqlRuParse {
                 Element href = td.child(0);
                 String link = href.attr("href");
                 String description = href.text();
-                Node node = td.parentNode().childNode(11);
-                String[] dataPostTemp = node.toString().split(">");
-                String[] dataPost = dataPostTemp[1].split("<");
-                ParsepShem parsepShem = new ParsepShem(link, description, sqlRuParse.parsPost(link), sqlRuParse.transformData(dataPost[0]));
+                String  dataPost = td.parentNode().childNode(childNodeFirstDataPost).childNode(childNodeSecondDataPost).toString();
+                ParsepShem parsepShem = new ParsepShem(link, description, sqlRuParse.parsPost(link), sqlRuParse.transformData(dataPost));
                 parsepShemList.add(parsepShem);
             }
         }
