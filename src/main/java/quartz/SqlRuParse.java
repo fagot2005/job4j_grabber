@@ -5,6 +5,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+
+import java.io.IOException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -17,11 +19,7 @@ public class SqlRuParse {
         List<ParsepShem> parsepShemList = new ArrayList<>();
         Document doc;
         for (int i = 1; i <= 5; i++) {
-            if (i == 1) {
-                doc  = Jsoup.connect("https://www.sql.ru/forum/job-offers").get();
-            } else {
-                doc = Jsoup.connect("https://www.sql.ru/forum/job-offers" + "/" + i).get();
-            }
+            doc = Jsoup.connect("https://www.sql.ru/forum/job-offers" + "/" + i).get();
             Elements row = doc.select(".postslisttopic");
             for (Element td : row) {
                 Element href = td.child(0);
@@ -30,14 +28,15 @@ public class SqlRuParse {
                 Node node = td.parentNode().childNode(11);
                 String[] dataPostTemp = node.toString().split(">");
                 String[] dataPost = dataPostTemp[1].split("<");
-                ParsepShem parsepShem = new ParsepShem(link, description, sqlRuParse.transform(dataPost[0]));
+                ParsepShem parsepShem = new ParsepShem(link, description, sqlRuParse.transformData(dataPost[0]));
                 parsepShemList.add(parsepShem);
                 System.out.println(link + System.lineSeparator() + description + System.lineSeparator() + parsepShemList.get(parsepShemList.size()-1).getDataPost());
+                sqlRuParse.parsPost(parsepShem);
             }
         }
     }
 
-    public LocalDate transform(String dataOfTransform) throws ParseException {
+    public LocalDate transformData(String dataOfTransform) throws ParseException {
         String today = "сегодня";
         String yesterday = "вчера";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
@@ -81,5 +80,11 @@ public class SqlRuParse {
             localDate = LocalDate.parse(localDataCeng, formatter);
         }
         return localDate;
+    }
+
+    public void parsPost (ParsepShem post) throws IOException {
+        //System.out.println(post);
+        Document doc = Jsoup.connect(post.getLink()).get();
+        Elements row = doc.select(".msgTable");
     }
 }
