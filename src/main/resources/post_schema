@@ -1,5 +1,5 @@
 create table post (
-    id text not null primary key,
+    id serial primary key,
     name text not null,
     text text,
     link text unique,
