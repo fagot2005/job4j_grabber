@@ -12,26 +12,44 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SqlRuParse {
+public class SqlRuParse implements Parse {
+    Post post = null;
+    List<Post> posts = new ArrayList<>();
+
     public static void main(String[] args) throws Exception {
+        SqlRuParse sqlRuParse = new SqlRuParse();
+        String startLink = "https://www.sql.ru/forum/job-offers";
+        sqlRuParse.list(startLink);
+        System.out.println("Parsing successful");
+    }
+
+    @Override
+    public List<Post> list(String link) throws IOException, ParseException {
+        Document doc;
         int childNodeFirstDataPost = 11;
         int childNodeSecondDataPost = 0;
-        SqlRuParse sqlRuParse = new SqlRuParse();
-        List<ParsepShem> parsepShemList = new ArrayList<>();
-        Document doc;
         for (int i = 1; i <= 5; i++) {
-            doc = Jsoup.connect("https://www.sql.ru/forum/job-offers" + "/" + i).get();
+            doc = Jsoup.connect(link + "/" + i).get();
             Elements row = doc.select(".postslisttopic");
             for (Element td : row) {
+                String dataPost = td.parentNode().childNode(childNodeFirstDataPost).childNode(childNodeSecondDataPost).toString();
                 Element href = td.child(0);
-                String link = href.attr("href");
                 String description = href.text();
-                String  dataPost = td.parentNode().childNode(childNodeFirstDataPost).childNode(childNodeSecondDataPost).toString();
-                ParsepShem parsepShem = new ParsepShem(link, description, sqlRuParse.parsPost(link), sqlRuParse.transformData(dataPost));
-                parsepShemList.add(parsepShem);
+                post = detail(href.attr("href"), dataPost, description);
+                posts.add(post);
             }
         }
-        System.out.println("Parsing successful");
+        return posts;
+    }
+
+    @Override
+    public Post detail(String link, String datePost, String description) throws IOException, ParseException {
+        int index = 1;
+        String id = String.valueOf(posts.size() + 1);
+        Document doc = Jsoup.connect(link).get();
+        String text= doc.select(".msgBody").get(index).text();
+        Post post = new Post(id, link, description, text, transformData(datePost));
+        return post;
     }
 
     public LocalDate transformData(String dataOfTransform) throws ParseException {
@@ -39,6 +57,7 @@ public class SqlRuParse {
         String yesterday = "вчера";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
         LocalDate localDate;
+        String localDataCeng;
         String[] dataArray = dataOfTransform.split(",");
         if (dataArray[0].equals(today)) {
             localDate = LocalDate.now();
@@ -46,44 +65,43 @@ public class SqlRuParse {
             localDate = LocalDate.now().minusDays(1);
         } else {
             String[] localDataArray = dataArray[0].split(" ");
-            String localDataCeng = "";
+            localDataCeng = "";
             if (localDataArray[0].length() == 1) {
                 localDataArray[0] = "0" + localDataArray[0];
             }
             if (localDataArray[1].equals("янв")) {
-                localDataCeng = localDataArray[0] + "/" + "01" + "/" + localDataArray[2];
+                localDataCeng = parsMonth(localDataArray, "01");
             } else if (localDataArray[1].equals("фев")) {
-                localDataCeng = localDataArray[0] + "/" + "02" + "/" + localDataArray[2];
+                localDataCeng = parsMonth(localDataArray, "02");
             } else if (localDataArray[1].equals("мар")) {
-                localDataCeng = localDataArray[0] + "/" + "03" + "/" + localDataArray[2];
+                localDataCeng = parsMonth(localDataArray, "03");
             } else if (localDataArray[1].equals("апр")) {
-                localDataCeng = localDataArray[0] + "/" + "04" + "/" + localDataArray[2];
+                localDataCeng = parsMonth(localDataArray, "04");
             } else if (localDataArray[1].equals("май")) {
-                localDataCeng = localDataArray[0] + "/" + "05" + "/" + localDataArray[2];
+                localDataCeng = parsMonth(localDataArray, "05");
             } else if (localDataArray[1].equals("июн")) {
-                localDataCeng = localDataArray[0] + "/" + "06" + "/" + localDataArray[2];
+                localDataCeng = parsMonth(localDataArray, "06");
             } else if (localDataArray[1].equals("июл")) {
-                localDataCeng = localDataArray[0] + "/" + "07" + "/" + localDataArray[2];
+                localDataCeng = parsMonth(localDataArray, "07");
             } else if (localDataArray[1].equals("авг")) {
-                localDataCeng = localDataArray[0] + "/" + "08" + "/" + localDataArray[2];
-            }else if (localDataArray[1].equals("сен")) {
-                localDataCeng = localDataArray[0] + "/" + "09" + "/" + localDataArray[2];
-            }else if (localDataArray[1].equals("окт")) {
-                localDataCeng = localDataArray[0] + "/" + "10" + "/" + localDataArray[2];
-            }else if (localDataArray[1].equals("ноя")) {
-                localDataCeng = localDataArray[0] + "/" + "11" + "/" + localDataArray[2];
-            }else if (localDataArray[1].equals("дек")) {
-                localDataCeng = localDataArray[0] + "/" + "08" + "/" + localDataArray[2];
+                localDataCeng = parsMonth(localDataArray, "08");
+            } else if (localDataArray[1].equals("сен")) {
+                localDataCeng = parsMonth(localDataArray, "09");
+            } else if (localDataArray[1].equals("окт")) {
+                localDataCeng = parsMonth(localDataArray, "10");
+            } else if (localDataArray[1].equals("ноя")) {
+                localDataCeng = parsMonth(localDataArray, "11");
+            } else if (localDataArray[1].equals("дек")) {
+                localDataCeng = parsMonth(localDataArray, "08");
             }
             localDate = LocalDate.parse(localDataCeng, formatter);
         }
         return localDate;
     }
 
-    public String parsPost (String link) throws IOException {
-        int index = 1;
-        Document doc = Jsoup.connect(link).get();
-        Element element = doc.select(".msgBody").get(index);
-        return element.text();
+    private String parsMonth(String[] localDataArray, String s) {
+        String localDataCeng;
+        localDataCeng = localDataArray[0] + "/" + s + "/" + localDataArray[2];
+        return localDataCeng;
     }
 }
