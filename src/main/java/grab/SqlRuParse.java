@@ -46,7 +46,7 @@ public class SqlRuParse implements Parse {
         String id = String.valueOf(posts.size() + 1);
         Document doc = Jsoup.connect(link).get();
         String text= doc.select(".msgBody").get(index).text();
-        Post post = new Post(id, link, description, text, new ParsLocalData().transformData(datePost));
+        Post post = new Post(id, link, description, text, new ParsLocalDataTime().transformDataTime(datePost));
         return post;
     }
 }

@@ -1,15 +1,16 @@
 package grab;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Post {
     private String id;
     private String name;
     private String text;
     private String link;
-    private LocalDate created;
+    private LocalDateTime created;
 
-    public Post(String id, String name, String text, String link, LocalDate created) {
+    public Post(String id, String name, String text, String link, LocalDateTime created) {
         this.id = id;
         this.name = name;
         this.text = text;
@@ -49,11 +50,11 @@ public class Post {
         this.link = link;
     }
 
-    public LocalDate getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(LocalDate created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 }
