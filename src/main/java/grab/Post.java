@@ -1,6 +1,6 @@
 package grab;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Post {
