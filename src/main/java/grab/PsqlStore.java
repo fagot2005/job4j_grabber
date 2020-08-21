@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,6 +80,7 @@ public class PsqlStore implements Store, AutoCloseable{
                 }
                 ps.executeBatch();
             }
+            connection.commit();
             connection.setAutoCommit(true);
         } catch (Exception e) {
             e.printStackTrace();
