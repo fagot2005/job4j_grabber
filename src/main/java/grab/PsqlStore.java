@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class PsqlStore implements Store, AutoCloseable{
     public PsqlStore(ConfigManager configManager) throws IOException {
         this.configManager = configManager;
         this.initConnection();
-        this.initTable();
+        //this.initTable();
     }
 
     public PsqlStore(Connection connection) {
@@ -25,7 +26,7 @@ public class PsqlStore implements Store, AutoCloseable{
 
     private void initConnection() {
         try {
-            Class.forName(configManager.get("jdbc.driver"));
+            Class.forName(configManager.get("driver-class-name"));
             connection = DriverManager.getConnection(
                     configManager.get("url"),
                     configManager.get("username"),
@@ -98,7 +99,7 @@ public class PsqlStore implements Store, AutoCloseable{
                             rs.getString("name"),
                             rs.getString("link"),
                             rs.getString("description"),
-                            rs.getTimestamp("create_date")
+                            rs.getTimestamp("create_date").toLocalDateTime()
                     );
                     p.setId(rs.getString("id"));
                     posts.add(p);
@@ -122,8 +123,7 @@ public class PsqlStore implements Store, AutoCloseable{
                             rs.getString("name"),
                             rs.getString("link"),
                             rs.getString("description"),
-                            rs.getTimestamp("create_date")
-                    );
+                            rs.getTimestamp("create_date").toLocalDateTime());
                     p.setId(rs.getString("id"));
                     post = p;
                 }
@@ -140,4 +140,20 @@ public class PsqlStore implements Store, AutoCloseable{
             connection.close();
         }
     }
+
+    public static void main(String[] args) throws IOException, ParseException, SQLException {
+        PsqlStore psqlStore = new PsqlStore(new ConfigManager("psqlstore.properties"));
+        SqlRuParse sqlRuParse = new SqlRuParse();
+        String startLink = "https://www.sql.ru/forum/job-offers";
+        List<Post> list = sqlRuParse.list(startLink);
+        System.out.println(list);
+        //psqlStore.saveAll(list);
+        for (Post ps:list
+             ) {
+            psqlStore.save(ps);
+        }
+        System.out.println("Parsing successful");
+    }
 }
+
+
