@@ -8,4 +8,6 @@ public interface Parse {
     List<Post> list(String link) throws IOException, ParseException;
 
     Post detail(String link, String datePost, String description) throws IOException, ParseException;
+
+    List<String> resources();
 }

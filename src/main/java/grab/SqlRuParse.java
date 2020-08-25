@@ -26,14 +26,14 @@ public class SqlRuParse implements Parse {
         Document doc;
         int childNodeFirstDataPost = 11;
         int childNodeSecondDataPost = 0;
-        for (int i = 1; i <= 5; i++) {
+        for (int i = 1; i <= 2; i++) {
             doc = Jsoup.connect(link + "/" + i).get();
             Elements row = doc.select(".postslisttopic");
             for (Element td : row) {
                 String dataPost = td.parentNode().childNode(childNodeFirstDataPost).childNode(childNodeSecondDataPost).toString();
                 Element href = td.child(0);
-                String description = href.text();
-                post = detail(href.attr("href"), dataPost, description);
+                String hederPost = href.text();
+                post = detail(href.attr("href"), dataPost, hederPost);
                 posts.add(post);
             }
         }
@@ -41,12 +41,18 @@ public class SqlRuParse implements Parse {
     }
 
     @Override
-    public Post detail(String link, String datePost, String description) throws IOException, ParseException {
+    public Post detail(String link, String datePost, String hederPost) throws IOException, ParseException {
         int index = 1;
         String id = String.valueOf(posts.size() + 1);
         Document doc = Jsoup.connect(link).get();
-        String text= doc.select(".msgBody").get(index).text();
-        Post post = new Post(id, link, description, text, new ParsLocalDataTime().transformDataTime(datePost));
+        String description= doc.select(".msgBody").get(index).text();
+        Post post = new Post(id, hederPost, link, description, new ParsLocalDataTime().transformDataTime(datePost));
         return post;
     }
+
+    @Override
+    public List<String> resources() {
+        return null;
+    }
 }
+

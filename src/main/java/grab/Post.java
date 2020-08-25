@@ -1,20 +1,19 @@
 package grab;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Post {
     private String id;
     private String name;
-    private String text;
     private String link;
-    private LocalDateTime created;
+    private String description;
+        private LocalDateTime created;
 
-    public Post(String id, String name, String text, String link, LocalDateTime created) {
+    public Post(String id, String name, String link, String description, LocalDateTime created) {
         this.id = id;
         this.name = name;
-        this.text = text;
         this.link = link;
+        this.description = description;
         this.created = created;
     }
 
@@ -34,12 +33,12 @@ public class Post {
         this.name = name;
     }
 
-    public String getText() {
-        return text;
+    public String getDescription() {
+        return description;
     }
 
-    public void setText(String text) {
-        this.text = text;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getLink() {

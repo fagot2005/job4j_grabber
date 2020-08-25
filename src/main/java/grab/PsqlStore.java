@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
 import java.text.ParseException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +52,7 @@ public class PsqlStore implements Store, AutoCloseable{
                 Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, post.getName());
             ps.setString(2, post.getLink());
-            ps.setString(3, post.getText());
+            ps.setString(3, post.getDescription());
             ps.setTimestamp(4, Timestamp.valueOf(post.getCreated()));
             ps.execute();
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -75,7 +74,7 @@ public class PsqlStore implements Store, AutoCloseable{
                 for (Post post : posts) {
                     ps.setString(1, post.getName());
                     ps.setString(2, post.getLink());
-                    ps.setString(3, post.getText());
+                    ps.setString(3, post.getDescription());
                     ps.setTimestamp(4, Timestamp.valueOf(post.getCreated()));
                     ps.addBatch();
                 }
@@ -135,6 +134,11 @@ public class PsqlStore implements Store, AutoCloseable{
     }
 
     @Override
+    public Timestamp lastItem() {
+        return null;
+    }
+
+        @Override
     public void close() throws Exception {
         if (connection != null) {
             connection.close();
@@ -146,13 +150,17 @@ public class PsqlStore implements Store, AutoCloseable{
         SqlRuParse sqlRuParse = new SqlRuParse();
         String startLink = "https://www.sql.ru/forum/job-offers";
         List<Post> list = sqlRuParse.list(startLink);
-        System.out.println(list);
+//        System.out.println(list);
         //psqlStore.saveAll(list);
-        for (Post ps:list
-             ) {
-            psqlStore.save(ps);
+        for (int i = 0; true;) {
+            for (Post ps:list
+                 ) {
+                psqlStore.save(ps);
+            }
         }
-        System.out.println("Parsing successful");
+        //System.out.println("Parsing successful");
+//        List<Post> all = psqlStore.getAll();
+//        System.out.println(all);
     }
 }
 
