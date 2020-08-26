@@ -111,7 +111,7 @@ public class Grabber implements Grab{
             }
             posts.forEach(p -> {
                 try {
-                    p.setDescription(parse.detail(p.getLink(), p.getCreated(), p.getDescription()).getDescription());
+                    p.setDescription(parse.detail(p.getLink(), p.getCreated().toString(), p.getDescription()).getDescription());
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ParseException e) {
