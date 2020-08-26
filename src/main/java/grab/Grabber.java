@@ -96,7 +96,7 @@ public class Grabber implements Grab{
             for (String resourse : parse.resources()) {
                 List<Post> urlPosts = null;
                 try {
-                    urlPosts = parse.list(resourse);
+                    urlPosts = (List<Post>) parse.list(resourse);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ParseException e) {

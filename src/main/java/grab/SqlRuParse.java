@@ -8,11 +8,14 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SqlRuParse implements Parse {
     Post post = null;
-    List<Post> posts = new ArrayList<>();
+    //List<Post> posts = new ArrayList<>();
+    Map<String, Post> posts = new LinkedHashMap();
 
     public static void main(String[] args) throws Exception {
         SqlRuParse sqlRuParse = new SqlRuParse();
@@ -22,11 +25,11 @@ public class SqlRuParse implements Parse {
     }
 
     @Override
-    public List<Post> list(String link) throws IOException, ParseException {
+    public Map<String, Post> list(String link) throws IOException, ParseException {
         Document doc;
         int childNodeFirstDataPost = 11;
         int childNodeSecondDataPost = 0;
-        for (int i = 1; i <= 2; i++) {
+        for (int i = 1; i <= 5; i++) {
             doc = Jsoup.connect(link + "/" + i).get();
             Elements row = doc.select(".postslisttopic");
             for (Element td : row) {
@@ -34,13 +37,13 @@ public class SqlRuParse implements Parse {
                 Element href = td.child(0);
                 String hederPost = href.text();
                 post = detail(href.attr("href"), dataPost, hederPost);
-                posts.add(post);
+                posts.put(post.getLink(), post);
             }
         }
         return posts;
     }
 
-    @Override
+   @Override
     public Post detail(String link, String datePost, String hederPost) throws IOException, ParseException {
         int index = 1;
         String id = String.valueOf(posts.size() + 1);

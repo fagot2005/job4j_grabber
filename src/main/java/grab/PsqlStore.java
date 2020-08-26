@@ -6,7 +6,9 @@ import java.nio.file.Path;
 import java.sql.*;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class PsqlStore implements Store, AutoCloseable{
@@ -138,7 +140,7 @@ public class PsqlStore implements Store, AutoCloseable{
         return null;
     }
 
-        @Override
+    @Override
     public void close() throws Exception {
         if (connection != null) {
             connection.close();
@@ -149,18 +151,12 @@ public class PsqlStore implements Store, AutoCloseable{
         PsqlStore psqlStore = new PsqlStore(new ConfigManager("psqlstore.properties"));
         SqlRuParse sqlRuParse = new SqlRuParse();
         String startLink = "https://www.sql.ru/forum/job-offers";
-        List<Post> list = sqlRuParse.list(startLink);
-//        System.out.println(list);
-        //psqlStore.saveAll(list);
-        for (int i = 0; true;) {
-            for (Post ps:list
-                 ) {
-                psqlStore.save(ps);
-            }
+        Map<String, Post> posts = sqlRuParse.list(startLink);
+        for (Map.Entry<String, Post> post : posts.entrySet()
+             ) {
+            psqlStore.save(post.getValue());
         }
-        //System.out.println("Parsing successful");
-//        List<Post> all = psqlStore.getAll();
-//        System.out.println(all);
+        System.out.println("Parsing successful");
     }
 }
 

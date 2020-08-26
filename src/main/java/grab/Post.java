@@ -1,6 +1,7 @@
 package grab;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class Post {
     private String id;
@@ -55,5 +56,18 @@ public class Post {
 
     public void setCreated(LocalDateTime created) {
         this.created = created;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return Objects.equals(link, post.link);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(link);
     }
 }
